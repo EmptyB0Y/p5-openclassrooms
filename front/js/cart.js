@@ -2,22 +2,9 @@ function productsList(){
     let items = document.getElementById("cart__items");
     for(let i = 0; i < localStorage.length; i++){
             let article = document.createElement("article");
+            let product = productParser(i);
             article.setAttribute("class","cart__item");
             article.setAttribute("data-id",localStorage.key(i));
-            let lst = String(localStorage.getItem(localStorage.key(i)));
-            lst += ",";
-            let product = [];
-            let str = "";
-            let j = 0;
-            for(let i = 0; i <= lst.length; i++){
-                if(lst.charAt(i) == ','){
-                    product[j] = str;
-                    str = "";
-                    j++;
-                }else{
-                    str += lst.charAt(i);
-                }
-            }
             console.log(product);
             article.innerHTML = 
             `<div class="cart__item__img">
@@ -61,29 +48,89 @@ function updateCart(){
     document.getElementById("totalPrice").innerHTML = totalPrice;
 }
 
+function productParser(i){
+  let lst = String(localStorage.getItem(localStorage.key(i)));
+  lst += ",";
+  let product = [];
+  let str = "";
+  let j = 0;
+  for(let i = 0; i <= lst.length; i++){
+    if(lst.charAt(i) == ','){
+      product[j] = str;
+      str = "";
+      j++;
+    }
+    else{
+      str += lst.charAt(i);
+    }
+  }
+  return product;
+}
+
+function order(credentials,products){
+  fetch("http://127.0.0.1:3000/api/order/", {
+  method: "post",
+  headers: {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json'
+  },
+
+  body: JSON.stringify({
+    name: credentials[0],
+    surname: credentials[1],
+    address: credentials[2],
+    city: credentials[3],
+    email: credentials[4],
+    products: products
+  })
+})
+.then( (response) => {
+    console.log(response); 
+   resolve("../html/confirmation.html");
+});
+}
+
 productsList();
 updateCart();
 
-let products = document.getElementsByClassName("cart__item__content__settings__delete");
+let productsDel = document.getElementsByClassName("cart__item__content__settings__delete");
 
 document.getElementsByClassName("cart").item(0).addEventListener("click",function(){
-    for(let i = 0; i < products.length; i++){
+    for(let i = 0; i < productsDel.length; i++){
         products.item(i).addEventListener("click",function(){
-            if(Boolean(products.item(i))){
-                let del = products.item(i).parentElement.parentElement.parentElement;
+            if(Boolean(productsDel.item(i))){
+                let del = productsDel.item(i).parentElement.parentElement.parentElement;
                 localStorage.removeItem(del.getAttribute("data-id"));
                 del.parentElement.removeChild(del);
-                products = document.getElementsByClassName("cart__item__content__settings__delete");
+                productsDel = document.getElementsByClassName("cart__item__content__settings__delete");
                 updateCart();
             }
         });
     }
 });
 
-document.getElementsByClassName("cart").item(0).addEventListener("input",function(e){
+document.getElementById("cart__items").addEventListener("input",function(e){
     console.log("update cart");
     for(let i = 0; i < products.length; i++){
         products.item(i).parentElement.getElementsByClassName("itemQuantity").item(0).setAttribute("value",e.target.value);
     }
     updateCart();
+});
+
+let form = document.getElementsByClassName("cart__order__form").item(0);
+let credentials = [];
+let productList = [];
+  for(let i = 0; i < form.children.length-1; i++){
+    form.children[i].children[1].addEventListener("input",function(e){
+      credentials[i] = e.target.value;
+    });
+  }
+document.getElementById("order").addEventListener("click",function(e){
+  e.preventDefault();
+  console.log(credentials);
+  for(let i = 0; i < localStorage.length; i++){
+    productList[i] = productParser(i);
+  }
+  console.log(productList);
+  order(credentials,productList);
 });

@@ -18,6 +18,25 @@ function productsShow(id){
     });
   }
   
+  function productParser(i){
+    let lst = String(localStorage.getItem(localStorage.key(i)));
+    lst += ",";
+    let product = [];
+    let str = "";
+    let j = 0;
+    for(let i = 0; i <= lst.length; i++){
+      if(lst.charAt(i) == ','){
+        product[j] = str;
+        str = "";
+        j++;
+      }
+      else{
+        str += lst.charAt(i);
+      }
+    }
+    return product;
+  }
+
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
   
@@ -33,7 +52,26 @@ function productsShow(id){
         lst.push(document.getElementById("title").innerText);
         lst.push(document.getElementById("price").innerText);
         lst.push(document.getElementById("quantity").value);
-        localStorage.setItem(urlParams.get("id"),lst);
+        lst.push(color);
+        if(Boolean(localStorage.getItem(urlParams.get("id")))){
+            let product;
+            for(let i = 0;i < localStorage.length; i++){
+                if(localStorage.key(i) == urlParams.get("id")){
+                    product = productParser(i);
+                    break;
+                }
+            }
+            if(product[4] == color){
+                lst[3] = Number(lst[3]) + Number(product[3])
+                localStorage.setItem(urlParams.get("id"),lst);
+            }
+            else{
+                localStorage.setItem(urlParams.get("id"+"-"+color),lst);
+            }
+        }
+        else{
+            localStorage.setItem(urlParams.get("id"),lst);
+        }
         console.log(lst);
     }
   });
