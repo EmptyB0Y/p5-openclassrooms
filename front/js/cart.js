@@ -5,7 +5,6 @@ function productsList(){
             let product = productParser(i);
             article.setAttribute("class","cart__item");
             article.setAttribute("data-id",localStorage.key(i));
-            console.log(product);
             article.innerHTML = 
             `<div class="cart__item__img">
               <img src="${product[0]}" alt="Photographie d'un canapé">
@@ -66,40 +65,79 @@ function productParser(i){
   }
   return product;
 }
-
+/**
+ *
+ * Expects request to contain:
+ * contact: {
+ *   firstName: string,
+ *   lastName: string,
+ *   address: string,
+ *   city: string,
+ *   email: string
+ * }
+ * products: [string] <-- array of product _id
+ *
+ */
 function order(credentials,products){
-  fetch("http://127.0.0.1:3000/api/order/", {
+  fetch("http://127.0.0.1:3000/api/products/order/", {
   method: "post",
   headers: {
     'Accept': 'application/json',
     'Content-Type': 'application/json'
   },
-
   body: JSON.stringify({
-    name: credentials[0],
-    surname: credentials[1],
+    contact : {
+    firstName: credentials[0],
+    lastName: credentials[1],
     address: credentials[2],
     city: credentials[3],
-    email: credentials[4],
+    email: credentials[4]
+    },
     products: products
   })
 })
-.then( (response) => {
-    console.log(response); 
-   resolve("../html/confirmation.html");
+.then((res) => {
+    if(res.ok){
+      window.open(`../html/confirmation.html?id=${res.orderId}`);
+    }
+    else{
+      console.log(res);
+      alert("Erreur...");
+    }
 });
 }
 
+function clearCart(){
+  localStorage.clear();
+  let items = document.getElementsByClassName("cart__item");
+  let cart = document.getElementById("cart__items");
+  for(let i = 0; i < items.length; i++) {
+    cart.removeChild(items.item(i));
+  }
+  updateCart();
+}
+
+//------------------------------
+//CONFIRMATION PAGE
+const queryString = window.location.search;
+const urlParams = new URLSearchParams(queryString)
+if(urlParams.get("id")){
+  document.getElementById("orderId").innerText = urlParams.get("id");
+}
+
+//ORDER PAGE
 productsList();
 updateCart();
 
 let productsDel = document.getElementsByClassName("cart__item__content__settings__delete");
+let products = document.getElementsByClassName("cart__item");
 
+//DELETE ITEM
 document.getElementsByClassName("cart").item(0).addEventListener("click",function(){
     for(let i = 0; i < productsDel.length; i++){
-        products.item(i).addEventListener("click",function(){
+        productsDel.item(i).addEventListener("click",function(){
             if(Boolean(productsDel.item(i))){
-                let del = productsDel.item(i).parentElement.parentElement.parentElement;
+                let del = products.item(i);
                 localStorage.removeItem(del.getAttribute("data-id"));
                 del.parentElement.removeChild(del);
                 productsDel = document.getElementsByClassName("cart__item__content__settings__delete");
@@ -109,17 +147,22 @@ document.getElementsByClassName("cart").item(0).addEventListener("click",functio
     }
 });
 
+//CHANGE ITEM QUANTITY
 document.getElementById("cart__items").addEventListener("input",function(e){
-    console.log("update cart");
     for(let i = 0; i < products.length; i++){
-        products.item(i).parentElement.getElementsByClassName("itemQuantity").item(0).setAttribute("value",e.target.value);
+        productsDel.item(i).parentElement.getElementsByClassName("itemQuantity").item(0).setAttribute("value",e.target.value);
+        let product = productParser(localStorage.getItem(products.item(i).getAttribute("data-id")));
+        product[3] = e.target.value;
+        localStorage.setItem(products.item(i).getAttribute("data-id"),[String(product[0]),String(product[1]),product[2],product[3],String(product[4])]);
     }
     updateCart();
 });
 
+//ORDER
 let form = document.getElementsByClassName("cart__order__form").item(0);
 let credentials = [];
 let productList = [];
+let orderPassed;
   for(let i = 0; i < form.children.length-1; i++){
     form.children[i].children[1].addEventListener("input",function(e){
       credentials[i] = e.target.value;
@@ -127,10 +170,21 @@ let productList = [];
   }
 document.getElementById("order").addEventListener("click",function(e){
   e.preventDefault();
-  console.log(credentials);
+  let id;
   for(let i = 0; i < localStorage.length; i++){
-    productList[i] = productParser(i);
+    id = localStorage.key(i);
+    if(id.length >= 32){
+      id = id.slice(0,32);
+    }
+    productList.push(id);
   }
   console.log(productList);
-  order(credentials,productList);
+  if(productList.length > 0){
+    clearCart();
+    order(credentials,productList);
+  }
+  else{
+    alert("Votre panier est vide !");
+  }
 });
+
