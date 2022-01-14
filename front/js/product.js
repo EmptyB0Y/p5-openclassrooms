@@ -46,7 +46,6 @@ function productsShow(id){
     let sel = document.getElementById("colors");
     let color = sel.options[sel.selectedIndex].text;
     if(document.getElementById("quantity").value > 0 && color != "--SVP, choisissez une couleur --"){
-        console.log("event passed");
         let lst = [];
         lst.push(document.getElementById("product-img").getAttribute("src"));
         lst.push(document.getElementById("title").innerText);
@@ -72,6 +71,6 @@ function productsShow(id){
         else{
             localStorage.setItem(urlParams.get("id"),lst);
         }
-        console.log(lst);
+        alert("Article ajouté au panier !");
     }
   });

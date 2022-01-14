@@ -65,6 +65,14 @@ function productParser(i){
   }
   return product;
 }
+
+function preventNumberInput(e){
+  var key = e.which;
+    if (key >= 48 && key <= 57){
+        e.preventDefault();
+    }
+}
+
 /**
  *
  * Expects request to contain:
@@ -124,7 +132,7 @@ const urlParams = new URLSearchParams(queryString)
 if(urlParams.get("id")){
   document.getElementById("orderId").innerText = urlParams.get("id");
 }
-
+//------------------------------
 //ORDER PAGE
 productsList();
 updateCart();
@@ -148,6 +156,7 @@ document.getElementsByClassName("cart").item(0).addEventListener("click",functio
 });
 
 //CHANGE ITEM QUANTITY
+
 document.getElementById("cart__items").addEventListener("input",function(e){
     for(let i = 0; i < products.length; i++){
         productsDel.item(i).parentElement.getElementsByClassName("itemQuantity").item(0).setAttribute("value",e.target.value);
@@ -158,16 +167,22 @@ document.getElementById("cart__items").addEventListener("input",function(e){
     updateCart();
 });
 
-//ORDER
+
+//ORDER AND CHECK FORM VALIDITY
 let form = document.getElementsByClassName("cart__order__form").item(0);
 let credentials = [];
 let productList = [];
-let orderPassed;
   for(let i = 0; i < form.children.length-1; i++){
     form.children[i].children[1].addEventListener("input",function(e){
       credentials[i] = e.target.value;
     });
+    if(form.children[i].children[1].id == "firstName" || form.children[i].children[1].id == "lastName" || form.children[i].children[1].id == "city"){
+      form.children[i].children[1].addEventListener("keypress",function(e){
+        preventNumberInput(e);
+      });
+    }
   }
+
 document.getElementById("order").addEventListener("click",function(e){
   e.preventDefault();
   let id;
@@ -178,13 +193,19 @@ document.getElementById("order").addEventListener("click",function(e){
     }
     productList.push(id);
   }
-  console.log(productList);
-  if(productList.length > 0){
-    clearCart();
-    order(credentials,productList);
+  if(credentials.length > 5){
+
+    if(productList.length > 0){
+      clearCart();
+      order(credentials,productList);
+    }
+    else{
+      alert("Votre panier est vide !");
+    }
   }
   else{
-    alert("Votre panier est vide !");
+    alert("Le formulaire de commande est incomplet !")
   }
+
 });
 
