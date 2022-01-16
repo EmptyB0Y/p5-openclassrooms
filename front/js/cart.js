@@ -67,7 +67,7 @@ function productParser(i){
 }
 
 function preventNumberInput(e){
-  var key = e.which;
+  let key = e.which;
     if (key >= 48 && key <= 57){
         e.preventDefault();
     }
@@ -106,6 +106,7 @@ function order(credentials,products){
 })
 .then((res) => {
     if(res.ok){
+      console.log(res);
       window.open(`../html/confirmation.html?id=${res.orderId}`);
     }
     else{
@@ -129,7 +130,7 @@ function clearCart(){
 //CONFIRMATION PAGE
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString)
-if(urlParams.get("id")){
+if(urlParams.has("id")){
   document.getElementById("orderId").innerText = urlParams.get("id");
 }
 //------------------------------
@@ -193,9 +194,10 @@ document.getElementById("order").addEventListener("click",function(e){
     }
     productList.push(id);
   }
-  if(credentials.length > 5){
 
-    if(productList.length > 0){
+  if(credentials.length == 5){
+
+    if(productList.length != 0){
       clearCart();
       order(credentials,productList);
     }
