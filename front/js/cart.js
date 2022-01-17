@@ -177,7 +177,7 @@ else{
   });
 
 
-  //ORDER AND CHECK FORM VALIDITY
+//FILL FORM AND CHECK VALIDITY
   let form = document.getElementsByClassName("cart__order__form").item(0);
   let credentials = [];
   let productList = [];
@@ -192,6 +192,7 @@ else{
       }
     }
 
+//ORDER
   document.getElementById("order").addEventListener("click",function(e){
     e.preventDefault();
     let id;
