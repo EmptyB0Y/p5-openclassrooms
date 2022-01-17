@@ -1,3 +1,4 @@
+//Remplis la fiche détaillée du produit sélectionné
 function productsShow(id){
     fetch("http://127.0.0.1:3000/api/products/"+id).then(blob => blob.json())
     .then(data => {
@@ -18,6 +19,7 @@ function productsShow(id){
     });
   }
   
+  //Parse la string renvoyé par localStorage.getItem() afin de pouvoir l'utiliser en tant que liste 
   function productParser(i){
     let lst = String(localStorage.getItem(localStorage.key(i)));
     lst += ",";
