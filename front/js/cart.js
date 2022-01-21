@@ -138,6 +138,7 @@ function clearCart(){
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString)
 if(urlParams.has("id")){
+  document.getElementsByClassName("confirmation").item(0).innerHTML = `<p>Merci ! <br>Commande validée ! <br>Votre numéro de commande est : <span id="orderId"></span></p>`;
   document.getElementById("orderId").innerText = urlParams.get("id");
 }
 //------------------------------
