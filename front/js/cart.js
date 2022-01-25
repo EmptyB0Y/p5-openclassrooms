@@ -12,13 +12,13 @@ function productsList(){
             </div>
             <div class="cart__item__content">
               <div class="cart__item__content__titlePrice">
-                <h2>${product[1]}</h2>
-                <p>${product[2]}</p>
+                <h2>${product[1]} - ${product[3]}</h2>
+                <p>${product[4]}</p>
               </div>
               <div class="cart__item__content__settings">
                 <div class="cart__item__content__settings__quantity">
                   <p>Qté : </p>
-                  <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="42">
+                  <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${product[2]}">
                 </div>
                 <div class="cart__item__content__settings__delete">
                   <p class="deleteItem">Supprimer</p>
@@ -26,7 +26,7 @@ function productsList(){
               </div>
             </div>`;
             items.appendChild(article);
-            article.getElementsByClassName("itemQuantity").item(0).setAttribute("value",product[3]);
+            //article.getElementsByClassName("itemQuantity").item(0).setAttribute("value",product[2]);
     }
   }
 
@@ -49,7 +49,7 @@ function updateCart(){
     document.getElementById("totalPrice").innerHTML = totalPrice;
 }
 
-//Parse la string renvoyé par localStorage.getItem() afin de pouvoir l'utiliser en tant que liste 
+//Parse la string renvoyé par localStorage.getItem() afin de pouvoir l'utiliser en tant que liste
 function productParser(i){
   let lst = String(localStorage.getItem(localStorage.key(i)));
   lst += ",";
@@ -66,9 +66,11 @@ function productParser(i){
       str += lst.charAt(i);
     }
   }
+  product[j] = String(sessionStorage.getItem(sessionStorage.key(i)));
   return product;
 }
 
+//Empêche l'utilisateur de rentrer des chiffres pour l'évènement input donné
 function preventNumberInput(e){
   let key = e.which;
     if (key >= 48 && key <= 57){

@@ -36,6 +36,7 @@ function productsShow(id){
         str += lst.charAt(i);
       }
     }
+    product[j] = String(sessionStorage.getItem(sessionStorage.key(i)));
     return product;
   }
 
@@ -51,7 +52,6 @@ function productsShow(id){
         let lst = [];
         lst.push(document.getElementById("product-img").getAttribute("src"));
         lst.push(document.getElementById("title").innerText);
-        lst.push(document.getElementById("price").innerText);
         lst.push(document.getElementById("quantity").value);
         lst.push(color);
         if(Boolean(localStorage.getItem(urlParams.get("id")))){
@@ -62,16 +62,18 @@ function productsShow(id){
                     break;
                 }
             }
-            if(product[4] == color){
-                lst[3] = Number(lst[3]) + Number(product[3])
+            if(product[3] == color){
+                lst[2] = Number(lst[2]) + Number(product[2])
                 localStorage.setItem(urlParams.get("id"),lst);
             }
             else{
-                localStorage.setItem(urlParams.get("id"+"-"+color),lst);
+                localStorage.setItem(urlParams.get("id")+"-"+color,lst);
+                sessionStorage.setItem(urlParams.get("id")+"-"+color,document.getElementById("price").innerText);
             }
         }
         else{
             localStorage.setItem(urlParams.get("id"),lst);
+            sessionStorage.setItem(urlParams.get("id"),document.getElementById("price").innerText);
         }
         alert("Article ajouté au panier !");
     }
