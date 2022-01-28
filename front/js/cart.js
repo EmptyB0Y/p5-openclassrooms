@@ -70,12 +70,18 @@ function productParser(i){
   return product;
 }
 
-//Empêche l'utilisateur de rentrer des chiffres pour l'évènement input donné
+//Empêche l'utilisateur d'entrer des chiffres pour l'évènement input donné
 function preventNumberInput(e){
   let key = e.which;
     if (key >= 48 && key <= 57){
         e.preventDefault();
     }
+}
+
+//Vérifie que l'utilisateur entre une addresse email au format valide
+function testEmailPattern(str){
+  let regex = /^\w+@\w+\.[a-z]+$/;
+  return regex.test(str);
 }
 
 /**
@@ -191,6 +197,17 @@ else{
       if(form.children[i].children[1].id == "firstName" || form.children[i].children[1].id == "lastName" || form.children[i].children[1].id == "city"){
         form.children[i].children[1].addEventListener("keypress",function(e){
           preventNumberInput(e);
+        });
+      }
+      else if(form.children[i].children[1].id == "email"){
+        form.children[i].children[1].addEventListener("input",function(){
+          if(!testEmailPattern(form.children[i].children[1].value)){
+            form.children[5].children[0].setAttribute("disabled","");
+            alert("Format d'e-mail invalide !");
+          }
+          else{
+            form.children[5].children[0].removeAttribute("disabled");
+          }
         });
       }
     }
