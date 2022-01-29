@@ -73,14 +73,15 @@ function productParser(i){
 //Empêche l'utilisateur d'entrer des chiffres pour l'évènement input donné
 function preventNumberInput(e){
   let key = e.which;
-    if (key >= 48 && key <= 57){
+    if ((key >= 33 && key <= 38) || (key >= 40 && key <= 44) || (key >= 46 && key <= 64)|| (key >= 123 && key <= 126)){
         e.preventDefault();
     }
 }
 
 //Vérifie que l'utilisateur entre une addresse email au format valide
 function testEmailPattern(str){
-  let regex = /^\w+@\w+\.[a-z]+$/;
+  let regex = /^[A-Za-z0-9_-]+@\w+\.[a-z]+$/;
+  console.log(regex.test(str));
   return regex.test(str);
 }
 
@@ -174,7 +175,6 @@ else{
   });
 
   //CHANGE ITEM QUANTITY
-
   document.getElementById("cart__items").addEventListener("input",function(e){
       for(let i = 0; i < products.length; i++){
           productsDel.item(i).parentElement.getElementsByClassName("itemQuantity").item(0).setAttribute("value",e.target.value);
@@ -203,7 +203,6 @@ else{
         form.children[i].children[1].addEventListener("input",function(){
           if(!testEmailPattern(form.children[i].children[1].value)){
             form.children[5].children[0].setAttribute("disabled","");
-            alert("Format d'e-mail invalide !");
           }
           else{
             form.children[5].children[0].removeAttribute("disabled");
@@ -226,12 +225,17 @@ else{
 
     if(credentials.length == 5){
 
-      if(productList.length != 0){
-        clearCart();
-        order(credentials,productList);
+      if(form.children[5].children[0].hasAttribute("disabled")){
+        alert("Le format de l'e-mail est invalide !");
       }
       else{
-        alert("Votre panier est vide !");
+        if(productList.length != 0){
+          clearCart();
+          order(credentials,productList);
+        }
+        else{
+          alert("Votre panier est vide !");
+        }
       }
     }
     else{
