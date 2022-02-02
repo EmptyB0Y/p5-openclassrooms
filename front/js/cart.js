@@ -70,18 +70,23 @@ function productParser(i){
   return product;
 }
 
-//Empêche l'utilisateur d'entrer des chiffres pour l'évènement input donné
-function preventNumberInput(e){
+//Empêche l'utilisateur d'entrer des chiffres ou des caractères spéciaux pour l'évènement input donné
+function preventNumberInput(e,id){
   let key = e.which;
     if ((key >= 33 && key <= 38) || (key >= 40 && key <= 44) || (key >= 46 && key <= 64)|| (key >= 123 && key <= 126)){
         e.preventDefault();
+        document.getElementById(id+"ErrorMsg").innerText = "Charactère non supporté !";
+        document.getElementById(id+"ErrorMsg").style.visibility = 'visible';
+    }
+    else{
+      document.getElementById(id+"ErrorMsg").style.visibility = 'hidden';
+
     }
 }
 
 //Vérifie que l'utilisateur entre une addresse email au format valide
 function testEmailPattern(str){
   let regex = /^[A-Za-z0-9_-]+@\w+\.[a-z]+$/;
-  console.log(regex.test(str));
   return regex.test(str);
 }
 
@@ -142,6 +147,20 @@ function clearCart(){
   updateCart();
 }
 
+//Vérifier le nombre d'informations contenues dans le formulaire
+function checkCredentials(credentials){
+  console.log(credentials);
+  for(let i of credentials){
+    if (i == null){
+      return false;
+    }
+  }
+  if(credentials.length == 5){
+    return true;
+  }
+  return false;
+}
+
 //------------------------------
 //CONFIRMATION PAGE
 const queryString = window.location.search;
@@ -196,16 +215,19 @@ else{
       });
       if(form.children[i].children[1].id == "firstName" || form.children[i].children[1].id == "lastName" || form.children[i].children[1].id == "city"){
         form.children[i].children[1].addEventListener("keypress",function(e){
-          preventNumberInput(e);
+          preventNumberInput(e,form.children[i].children[1].id);
         });
       }
       else if(form.children[i].children[1].id == "email"){
         form.children[i].children[1].addEventListener("input",function(){
           if(!testEmailPattern(form.children[i].children[1].value)){
             form.children[5].children[0].setAttribute("disabled","");
+            document.getElementById("emailErrorMsg").innerText = "Patterne d'e-mail invalide !";
+            document.getElementById("emailErrorMsg").style.visibility = 'visible';
           }
           else{
             form.children[5].children[0].removeAttribute("disabled");
+            document.getElementById("emailErrorMsg").style.visibility = 'hidden';
           }
         });
       }
@@ -223,12 +245,7 @@ else{
       productList.push(id);
     }
 
-    if(credentials.length == 5){
-
-      if(form.children[5].children[0].hasAttribute("disabled")){
-        alert("Le format de l'e-mail est invalide !");
-      }
-      else{
+    if(checkCredentials(credentials)){
         if(productList.length != 0){
           clearCart();
           order(credentials,productList);
@@ -237,7 +254,6 @@ else{
           alert("Votre panier est vide !");
         }
       }
-    }
     else{
       alert("Le formulaire de commande est incomplet !")
     }
